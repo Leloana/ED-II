@@ -5,13 +5,13 @@
 		"10_0" -> "1_1";
 		"1_1"  [style=filled, fillcolor=purple, fontcolor=black];
 
-		"24_0";
-		"20_1";
-		"20_1" -> "10_0";
+		"20_0";
+		"14_1";
+		"14_1" -> "10_0";
 		"10_0"  [style=filled, fillcolor=purple, fontcolor=black];
 
-		"20_1"-> "24_0";
-		"24_0"  [style=filled, fillcolor=red, fontcolor=black];
+		"14_1"-> "20_0";
+		"20_0"  [style=filled, fillcolor=red, fontcolor=black];
 
 		"55_1";
 		"50_0";
@@ -27,8 +27,8 @@
 		"80_0"  [style=filled, fillcolor=red, fontcolor=black];
 
 		"30_0";
-		"30_0" -> "20_1";
-		"20_1"  [style=filled, fillcolor=purple, fontcolor=black];
+		"30_0" -> "14_1";
+		"14_1"  [style=filled, fillcolor=purple, fontcolor=black];
 
 		"30_0"-> "60_1";
 		"60_1"  [style=filled, fillcolor=red, fontcolor=black];

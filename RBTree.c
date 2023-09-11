@@ -164,14 +164,10 @@ void insert(Root* Tree, int value){
     AjeitaTree(Tree, newNode);
 }
 
-
-void deleteFixup(Root* Tree, Node* x, Node* xParent){
+void deleteFixup(Root* Tree,Root* teste, Node* x, Node* xParent){
     Node* w;
 
-    printf("\nCHAMOU %d\n",x->color);
-    printf("\nCHAMOU %d\n",x->chave);
-    
-    if((xParent != NULL) && (x == NULL || x->color == 0)){
+    if((x->pai != NULL) && (x == NULL || x->color == 0)){
         printf("        BANG BANG   0");
         if(x == xParent->esq){
             printf("        BANG BANG 1  ");
@@ -180,7 +176,7 @@ void deleteFixup(Root* Tree, Node* x, Node* xParent){
             if(w->color == 1){//se o irmao for vermelho
                 w->color = 0;//irmao fica preto
                 xParent->color = 1;//pai fica vermelho
-                Rotateesq(Tree, xParent);//rotaciona
+                Rotateesq(teste, xParent);//rotaciona
                 w = xParent->dir;
             }
 
@@ -193,13 +189,13 @@ void deleteFixup(Root* Tree, Node* x, Node* xParent){
                 if(w->dir == NULL || w->dir->color == 0){
                     w->esq->color = 0;
                     w->color = 1;
-                    Rotatedir(Tree, w);
+                    Rotatedir(teste, w);
                     w = xParent->dir;
                 }
                 w->color = xParent->color;
                 xParent->color = 0;
                 w->dir->color = 0;
-                Rotateesq(Tree, xParent);
+                Rotateesq(teste, xParent);
                 x = Tree->root;
             }
         } 
@@ -222,14 +218,14 @@ void deleteFixup(Root* Tree, Node* x, Node* xParent){
                 if(w->esq == NULL || w->esq->color == 0){
                     w->dir->color = 0;
                     w->color = 1;
-                    Rotateesq(Tree, w);
+                    Rotateesq(teste, w);
                     w = xParent->esq;
                 }
                 printf("    Amoeba ganes");
                 w->color = xParent->color;
                 xParent->color = 0;
                 w->esq->color = 0;
-                Rotatedir(Tree, xParent);
+                Rotatedir(teste, xParent);
                 x = Tree->root;
             }
         }
@@ -239,7 +235,7 @@ void deleteFixup(Root* Tree, Node* x, Node* xParent){
 }
 
 
-void deleteNode(Root* Tree,int value){
+void deleteNode(Root* Tree,Root* teste, int value){
     Node* atual = Tree->root;//"atual" é o ponteiro que percorrerá a arvore
     printf("\nDeleting...\n");
     while (atual->chave != value || atual != NULL) {//Se atual == NULL significa que chegou ao fim da arvore
@@ -254,10 +250,11 @@ void deleteNode(Root* Tree,int value){
     }
 
     if((atual->dir == NULL) && (atual->esq == NULL)){//se for no folha
+        if(atual->color == 0)deleteFixup(Tree,teste,atual, atual->pai);//se remover uma folha preta precisa corrigir
+        
         if(atual->pai->esq == atual)atual->pai->esq = NULL;//zera os ponteiros do pai
         else atual->pai->dir = NULL;
 
-        if(atual->color == 0)deleteFixup(Tree,atual, atual->pai);//se remover uma folha preta precisa corrigir
         free(atual);//Caso seja uma folha 
     }
     else if((atual->dir != NULL) || (atual->esq != NULL)){//Caso Tenha algum filho
@@ -265,7 +262,6 @@ void deleteNode(Root* Tree,int value){
         if(atual->dir) aux = atual->dir;//aux recebe o no que existir
         else aux = atual->esq;
 
-        printf("    %d", aux->chave);
         while(aux->esq != NULL)aux = aux->esq;//devo procurar o menor node da parte direita
         atual->chave = aux->chave;//valor a ser deletado recebe menor valor a sua direita
         aux->chave = value;//aux recebe o valor a ser deletado
@@ -274,7 +270,7 @@ void deleteNode(Root* Tree,int value){
         if(atual->dir) auxTree.root = atual->dir;//aux recebe o no que existir
         else auxTree.root = atual->esq;
 
-        deleteNode(&auxTree,value);
+        deleteNode(&auxTree,teste,value);
     }
 }
 
@@ -328,7 +324,7 @@ int main(void){
     insert(&cabeca, 30);
     insert(&cabeca, 20);
     insert(&cabeca, 50);
-    insert(&cabeca, 24);
+    insert(&cabeca, 14);
 
     insert(&cabeca, 60);
     insert(&cabeca, 10);
@@ -346,7 +342,14 @@ int main(void){
     DOT_Tree(cabeca.root, "arvore.DOT");
     FechaEscritaDOT("arvore.DOT");
 
-    deleteNode(&cabeca,20);
+    deleteNode(&cabeca,&cabeca,30);
+    deleteNode(&cabeca,&cabeca,1);
+    deleteNode(&cabeca,&cabeca,55);
+    deleteNode(&cabeca,&cabeca,80);
+    deleteNode(&cabeca,&cabeca,20);
+    deleteNode(&cabeca,&cabeca,50);
+    deleteNode(&cabeca,&cabeca,60);
+    deleteNode(&cabeca,&cabeca,14);
 
     FILE* DOT2 = AbreEscritaDot("mudancas.DOT");
     DOT_Tree(cabeca.root, "mudancas.DOT");  
