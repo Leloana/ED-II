@@ -36,7 +36,7 @@ int hashPosic(int value){
             num[(6 - tam) + aux] = valor % 10;
             valor /= 10;
             aux--;
-        }
+        } 
     }
     
     printf("\nVETOR FORMADO = {");
@@ -104,17 +104,22 @@ void initHash(Lista hash[], int tamanho){
 
 int main(void){
     Lista vetor[TAM];
-    initHash(vetor,6);
-    int num;
+    initHash(vetor,TAM);
+    
+    int *num = calloc(1,sizeof(int));
 
     for(int i = 0; i < TAM; i++){
         printf("\nDIGITE A CHAVE %d = ", i);
-        scanf("%d", &num);
         
-        int posic = hashPosic(num);
+        scanf("%d", num);
+        
+        int posic = hashPosic(*num);
+        
         Lista aux = vetor[posic];
+
         printf("\nPOSIC %d = %d\n", i, posic);
         printf("\n========================================");
-        insertLst(aux,(Item)num);//Insere o novo valor no final da lista
+
+        insertLst(aux,num);//Insere o novo valor no final da lista
     }
 }
