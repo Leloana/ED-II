@@ -4,20 +4,18 @@
 #include <math.h>
 #include "list.h"
 
-#define TAM 99
+#define TAM 100
 //Calculo que define a posicao do elemento na hash pela DOBRA
 int hashPosic(int value){
     int valor = value;
     char CHAVE[7];
     sprintf(CHAVE,"%d", valor);//Converte valor para string
-    printf("\nCHAVE EM STRING = %s",CHAVE);
     int tam = strlen(CHAVE);
-    printf("\nTAMANHO DA STRING = %d\n", tam);
     int num[6];
 
     if(tam > 6){
-        printf("\n!!!TAMANHO INVALIDO, INSIRA UM ELEMENTO DE ATE 6 DIGITOS!!!\n");
-        return 0 ;
+        printf("\n!TAMANHO INVALIDO, INSIRA UM ELEMENTO DE ATE 6 DIGITOS!\n");
+        return -1 ;
     }
     
     //TRANSFERE DIGITO PARA VETOR
@@ -43,9 +41,8 @@ int hashPosic(int value){
     for (int i = 0 ; i < 5; i++) {
         printf("%d, ",num[i]);
     }
-    printf("%d }", num[5]);
+    printf("%d}", num[5]);
 
-    printf("\n\n");
     int dobra1[4];
     if((num[0]%10) + (num[3]%10) >= 10){//se a soma do segundo digito subir 1
         dobra1[1] = num[0] + num[3] - 10;
@@ -60,7 +57,7 @@ int hashPosic(int value){
     dobra1[2] = num[4];
     dobra1[3] = num[5];
 
-    printf("Dobra 1 = {%d, %d, %d, %d}",dobra1[0],dobra1[1],dobra1[2],dobra1[3]);
+    printf("\nDobra 1 = {%d, %d, %d, %d}",dobra1[0],dobra1[1],dobra1[2],dobra1[3]);
 
     int dobra2[2];
 
@@ -88,38 +85,131 @@ int hashPosic(int value){
     strcpy(Resultado,Digito1);
     strcat(Resultado,Digito2);
 
-    printf("\n\nHash tem 2 digitos de casas = {%s}", Resultado);
-
     dobraFinal = atoi(Resultado);
 
     return dobraFinal;
 }
-//Insira a hash table e o tamanho para inicializar as listas
-void initHash(Lista hash[], int tamanho){
-    for(int i = 0;i < tamanho; i++){
-            Lista aux = createLst(-1);
-            hash[i] = aux;
+
+bool deleteValue(Lista hash[], int value){
+    int posic = hashPosic(value);
+
+    if(!hash[posic]){
+        printf("\n\n!NUMERO NAO ENCONTRADO!");
+        return false;
+    }
+    
+    Lista aux = hash[posic];
+    int num = 0;
+    Posic deletPointer = getFirstLst(aux);//deletPointer recebe a cabeca da lista
+    num = getLst(aux, deletPointer);
+
+    while(num != value ){
+        deletPointer = getNextLst(aux, deletPointer);//deletPointer recebe o proximo ponteiro em relacao a ele mesmo   
+        if (deletPointer == NULL)break; 
+        num = getLst(aux, deletPointer);
+    }
+
+    if (deletPointer == NULL){
+        printf("\n\n!NUMERO NAO ENCONTRADO!");
+        return false;
+    }
+    
+    removeLst(aux, deletPointer);
+    return true;
+}
+
+void printPosic(Lista hash[], int posic){
+    if(hash[posic] == NULL){
+        printf("\nNAO HA VALORES NESTE SETOR");
+        return;
+    }
+    
+    Lista aux = hash[posic];
+    Iterador K = createIterator(aux,false);
+
+    printf("\nLISTA[%d] = ", posic);
+    while (!isIteratorEmpty(aux,K)){
+        printf(" %d ", (int)getIteratorNext(aux,K));
     }
 }
 
 int main(void){
-    Lista vetor[TAM];
-    initHash(vetor,TAM);
+    Lista vetor[TAM] = {0};
+    int Inseridos[100] = {0};
+    int quantia = 0;
+
+    int removidos[100] = {0};
+    int quantiaRem = 0;
+
+    int num;
+
+    int input = 0;
+    printf("\n=====================TABELA HASH====================\n");
+    printf("\n\t\t[0]INSERIR UM VALOR\n");
+    printf("\n\t\t[1]REMOVER UM VALOR\n");
+    printf("\n\t\t[2]ESCREVER LISTA\n");
+    printf("\n\t\t[3]SAIR\n");
+    printf("\n======================================================\n");
+    printf("\nACAO = ");
     
-    int *num = calloc(1,sizeof(int));
+    scanf("%d", &input);
 
-    for(int i = 0; i < TAM; i++){
-        printf("\nDIGITE A CHAVE %d = ", i);
-        
-        scanf("%d", num);
-        
-        int posic = hashPosic(*num);
-        
-        Lista aux = vetor[posic];
+    while(input != 3){
+        if(input == 0){
+            printf("\nDIGITE A CHAVE = ");
+            
+            scanf("%d", &num);
+            
+            int posic = hashPosic(num);
+            if(posic > 0){
+                if(vetor[posic] == NULL){
+                    Lista new = createLst(-1);
+                    vetor[posic] = new;
+                }
 
-        printf("\nPOSIC %d = %d\n", i, posic);
-        printf("\n========================================");
+                Lista aux = vetor[posic];
 
-        insertLst(aux,num);//Insere o novo valor no final da lista
+                printf("\n\nPOSICAO = {%d}\n",posic);
+
+                insertLst(aux,num);//Insere o novo valor no final da lista
+
+                Inseridos[quantia] = (int)num;
+                quantia++;
+
+                printf("\nINSERIDO COM SUCESSO!!");
+            }
+        }
+        else if(input == 1){
+            printf("\nVALORES INSERIDOS: ");
+            for(int i = 0; i < quantia; i ++){
+                printf(" %d ", Inseridos[i]);
+            }
+            printf("\nVALORES REMOVIDOS: ");
+            for(int i = 0; i < quantiaRem; i ++){
+                printf(" %d ", removidos[i]);
+            }
+
+            int removido = 0;
+            printf("\nVALOR A REMOVER = ");
+            scanf("%d", &removido);
+
+            if(deleteValue(vetor, removido)){
+            removidos[quantiaRem] = removido;
+            quantiaRem ++;
+            printf("\n\nREMOCAO CONCLUIDA");
+            }
+        }
+
+        else if(input == 2){
+            int posicao = 0;
+            printf("\nPOSICAO DA LISTA = ");
+            scanf("%d", &posicao);
+            printPosic(vetor, posicao);
+            printf("\n\nESCRITA CONCLUIDA");
+        }
+        printf("\n======================================================\n");
+        printf("\nACAO = ");
+        scanf("%d", &input);
     }
+    return 0;
 }
