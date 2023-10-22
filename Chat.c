@@ -1,372 +1,147 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "fila.h"
+#define TAM 6
 
-// Estrutura de um nó da árvore
-typedef struct Node {
-    int data;
-    struct Node* parent;
-    struct Node* left;
-    struct Node* right;
-    int color; // 0 para preto, 1 para vermelho
-} Node;
+// Enumeração para representar as cores dos vértices
+enum Cor {
+    BRANCO,
+    CINZA,
+    PRETO
+};
+// Estrutura para representar um nó na lista de adjacência
+typedef  struct _node {
+    int destino;
+    struct _node* proximo;
+}Node;
 
-// Estrutura de uma árvore rubro-negra
-typedef struct RedBlackTree {
-    Node* root;
-} RedBlackTree;
+// Estrutura para representar um grafo
+typedef struct _grafo {
+    int V; // Número de vértices
+    Node** listaAdj; // Lista de adjacência
+}Grafo;
 
-// Função auxiliar para criar um novo nó
-Node* createNode(int data) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->data = data;
-    newNode->left = NULL;
-    newNode->right = NULL;
-    newNode->parent = NULL;
-    newNode->color = 1; // Por padrão, o novo nó é vermelho
-    return newNode;
+// Estrutura para representar informações sobre os vértices
+typedef struct _infovertice {
+    enum Cor cor;
+    int distancia; // Distância a partir do vértice de origem
+    int predecessor; // Vértice predecessor na busca em largura
+}InfoVertice;
+
+// Função para criar um novo nó na lista de adjacência
+Node* novoNo(int destino) {
+    Node* novo = (Node*)malloc(sizeof(Node));
+    novo->destino = destino;
+    novo->proximo = NULL;
+    return novo;
 }
 
-// Função auxiliar para encontrar o nó com o valor mínimo em uma árvore
-Node* findMin(Node* node) {
-    while (node->left != NULL) {
-        node = node->left;
-    }
-    return node;
+// Função para criar um grafo com V vértices
+Grafo* criarGrafo(int V) {
+    Grafo* grafo = (Grafo*)malloc(sizeof(Grafo));
+    grafo->V = V;
+    grafo->listaAdj = (Node**)malloc(V * sizeof(Node*));
+
+    // Inicializa todas as listas de adjacência como vazias
+    for (int i = 0; i < V; ++i)
+        grafo->listaAdj[i] = NULL;
+
+    return grafo;
 }
 
-// Função auxiliar para realizar uma rotação à leftuerda
-void rotateLeft(RedBlackTree* tree, Node* x) {
-    Node* y = x->right;
-    x->right = y->left;
-    
-    if (y->left != NULL) {
-        y->left->parent = x;
-    }
-    
-    y->parent = x->parent;
-    
-    if (x->parent == NULL) {
-        tree->root = y;
-    } else if (x == x->parent->left) {
-        x->parent->left = y;
-    } else {
-        x->parent->right = y;
-    }
-    
-    y->left = x;
-    x->parent = y;
+// Função para adicionar uma aresta ao grafo
+void adicionarAresta(Grafo* grafo, int origem, int destino) {
+    // Adiciona uma aresta da origem para o destino
+    Node* novo = novoNo(destino);
+    novo->proximo = grafo->listaAdj[origem];
+
+    grafo->listaAdj[origem] = novo;
 }
 
-// Função auxiliar para realizar uma rotação à righteita
-void rotateRight(RedBlackTree* tree, Node* y) {
-    Node* x = y->left;
-    y->left = x->right;
-    
-    if (x->right != NULL) {
-        x->right->parent = y;
+// Função para realizar a busca em largura no grafo a partir de um vértice
+void buscaEmLargura(Grafo* grafo, int verticeInicial, InfoVertice* infoVertices) {
+    printf("\n=======================================================");
+    printf("\nBusca em Largura a partir do vértice %d: ", verticeInicial);
+    // Inicializa a informação dos vértices
+    for (int i = 0; i < grafo->V; ++i) {
+        infoVertices[i].cor = BRANCO;
+        infoVertices[i].distancia = -1;
+        infoVertices[i].predecessor = -1;
     }
-    
-    x->parent = y->parent;
-    
-    if (y->parent == NULL) {
-        tree->root = x;
-    } else if (y == y->parent->left) {
-        y->parent->left = x;
-    } else {
-        y->parent->right = x;
-    }
-    
-    x->right = y;
-    y->parent = x;
-}
 
-// Função auxiliar para ajustar o balanceamento após a inserção
-void insertFixup(RedBlackTree* tree, Node* z) {
-    while (z != tree->root && z->parent->color == 1) {
-        if (z->parent == z->parent->parent->left) {
-            Node* y = z->parent->parent->right;
-            if (y != NULL && y->color == 1) {
-                z->parent->color = 0;
-                y->color = 0;
-                z->parent->parent->color = 1;
-                z = z->parent->parent;
-            } else {
-                if (z == z->parent->right) {
-                    z = z->parent;
-                    rotateLeft(tree, z);
-                }
-                z->parent->color = 0;
-                z->parent->parent->color = 1;
-                rotateRight(tree, z->parent->parent);
+    // Inicializa a fila
+    Queue fila = createQueue(grafo->V);
+
+    // Marca o vértice inicial como cinza (visitado)
+    infoVertices[verticeInicial].cor = CINZA;
+    infoVertices[verticeInicial].distancia = 0;
+    // Enfileira o vértice inicial
+    insertQueue(fila, verticeInicial);
+    // Loop principal da busca em largura
+    while (!isEmptyQ(fila)) {
+        // Desenfileira um vértice
+        int verticeAtual = removeQueue(fila);
+
+        // Percorre todos os vértices adjacentes ao vértice desenfileirado
+        Node* atual = grafo->listaAdj[verticeAtual];
+        while (atual != NULL) {
+            int destino = atual->destino;
+                
+
+            // Enfileira o vértice adjacente se ainda não foi visitado
+            if (infoVertices[destino].cor == BRANCO) {
+                infoVertices[destino].cor = CINZA;
+                infoVertices[destino].distancia = infoVertices[verticeAtual].distancia + 1;
+                infoVertices[destino].predecessor = verticeAtual;
+                printf("%d ", destino);
+                insertQueue(fila, destino);
             }
-        } else {
-            Node* y = z->parent->parent->left;
-            if (y != NULL && y->color == 1) {
-                z->parent->color = 0;
-                y->color = 0;
-                z->parent->parent->color = 1;
-                z = z->parent->parent;
-            } else {
-                if (z == z->parent->left) {
-                    z = z->parent;
-                    rotateRight(tree, z);
-                }
-                z->parent->color = 0;
-                z->parent->parent->color = 1;
-                rotateLeft(tree, z->parent->parent);
-            }
+            atual = atual->proximo;
         }
+
+        // Marca o vértice como preto (totalmente explorado)
+        infoVertices[verticeAtual].cor = PRETO;
     }
-    
-    tree->root->color = 0;
+    // Imprime as informações sobre os vértices (distância e predecessor)
+    printf("\n\nInformacoes sobre os vertices:\n");
+    for (int i = 0; i < 6; ++i) {
+        printf("Vertice %d: Distancia = %d, Anterior = %d, Cor = %d\n", i, infoVertices[i].distancia, infoVertices[i].predecessor,infoVertices[i].cor);
+    }
+    // Libera a memória alocada para a fila
+    killQueue(fila);
 }
 
-// Função para inserir um valor na árvore
-void insert(RedBlackTree* tree, int data) {
-    Node* newNode = createNode(data);
-    Node* y = NULL;
-    Node* x = tree->root;
-    
-    while (x != NULL) {
-        y = x;
-        if (newNode->data < x->data) {
-            x = x->left;
-        } else {
-            x = x->right;
-        }
-    }
-    
-    newNode->parent = y;
-    
-    if (y == NULL) {
-        tree->root = newNode;
-    } else if (newNode->data < y->data) {
-        y->left = newNode;
-    } else {
-        y->right = newNode;
-    }
-    
-    insertFixup(tree, newNode);
-}
-
-// Função auxiliar para realizar a transplantação de um nó
-void transplant(RedBlackTree* tree, Node* u, Node* v) {
-    if (u->parent == NULL) {
-        tree->root = v;
-    } else if (u == u->parent->left) {
-        u->parent->left = v;
-    } else {
-        u->parent->right = v;
-    }
-    
-    if (v != NULL) {
-        v->parent = u->parent;
-    }
-}
-
-// Função auxiliar para ajustar o balanceamento após a remoção
-void deleteFixup(RedBlackTree* tree, Node* x) {
-    while (x != tree->root && (x == NULL || x->color == 0)) {
-        if (x == x->parent->left) {
-            Node* w = x->parent->right;
-
-            if (w != NULL && w->color == 1) {
-                w->color = 0;
-                x->parent->color = 1;
-                rotateLeft(tree, x->parent);
-                w = x->parent->right;
-            }
-
-            if ((w->left == NULL || w->left->color == 0) &&
-                (w->right == NULL || w->right->color == 0)) {
-                w->color = 1;
-                x = x->parent;
-            } else {
-                if (w->right == NULL || w->right->color == 0) {
-                    w->left->color = 0;
-                    w->color = 1;
-                    rotateRight(tree, w);
-                    w = x->parent->right;
-                }
-
-                w->color = x->parent->color;
-                x->parent->color = 0;
-                w->right->color = 0;
-                rotateLeft(tree, x->parent);
-                x = tree->root;
-            }
-        } else {
-            Node* w = x->parent->left;
-
-            if (w != NULL && w->color == 1) {
-                w->color = 0;
-                x->parent->color = 1;
-                rotateRight(tree, x->parent);
-                w = x->parent->left;
-            }
-
-            if ((w->right == NULL || w->right->color == 0) &&
-                (w->left == NULL || w->left->color == 0)) {
-                w->color = 1;
-                x = x->parent;
-            } else {
-                if (w->left == NULL || w->left->color == 0) {
-                    w->right->color = 0;
-                    w->color = 1;
-                    rotateLeft(tree, w);
-                    w = x->parent->left;
-                }
-
-                w->color = x->parent->color;
-                x->parent->color = 0;
-                w->left->color = 0;
-                rotateRight(tree, x->parent);
-                x = tree->root;
-            }
-        }
-    }
-
-    if (x != NULL) {
-        x->color = 0;
-    }
-}
-
-
-
-// Função para remover um valor da árvore
-void deleteNode(RedBlackTree* tree, int data) {
-    Node* z = tree->root;
-    
-    // Encontre o nó a ser removido
-    while (z != NULL) {
-        if (data == z->data) {
-            break;
-        }
-        
-        if (data < z->data) {
-            z = z->left;
-        } else {
-            z = z->right;
-        }
-    }
-    
-    if (z == NULL) {
-        // O valor não está na árvore
-        return;
-    }
-    
-    Node* y = z;
-    int yOriginalColor = y->color;
-    Node* x;
-    
-    if (z->left == NULL) {
-        x = z->right;
-        transplant(tree, z, z->right);
-    } else if (z->right == NULL) {
-        x = z->left;
-        transplant(tree, z, z->left);
-    } else {
-        y = findMin(z->right);
-        yOriginalColor = y->color;
-        x = y->right;
-        
-        if (y->parent == z) {
-            if (x != NULL) {
-                x->parent = y;
-            }
-        } else {
-            transplant(tree, y, y->right);
-            y->right = z->right;
-            y->right->parent = y;
-        }
-        
-        transplant(tree, z, y);
-        y->left = z->left;
-        y->left->parent = y;
-        y->color = z->color;
-    }
-    
-    if (yOriginalColor == 0) {
-        deleteFixup(tree, x);
-    }
-}
-
-
-// Função para realizar um percurso em ordem na árvore
-void inorderTraversal(Node* node) {
-    if (node != NULL) {
-        inorderTraversal(node->left);
-        printf("%d ", node->data);
-        inorderTraversal(node->right);
-    }
-}
-
-void DOT_Tree(Node* Tree, char* name){
-    FILE* DOT = fopen(name, "a+");
-    fprintf(DOT, "\n\t\t\"%d_%d\";",Tree->data, Tree->color);
-    if(Tree->left != NULL){//mesma logica de printfTree
-        fprintf(DOT, "\n\t\t\"%d_%d\" -> \"%d_%d\";\n",Tree->data,Tree->color,Tree->left->data,Tree->left->color);
-        fprintf(DOT, "\t\t\"%d_%d\"  [style=filled, fillcolor=purple, fontcolor=black];\n",Tree->left->data,Tree->left->color);//Nos a leftuerda sao roxos
-        DOT_Tree(Tree->left, name);
-    }
-
-    if(Tree->right != NULL){
-        fprintf(DOT, "\n\t\t\"%d_%d\"-> \"%d_%d\";\n",Tree->data,Tree->color,Tree->right->data,Tree->right->color);
-        fprintf(DOT, "\t\t\"%d_%d\"  [style=filled, fillcolor=red, fontcolor=black];\n",Tree->right->data,Tree->right->color);//Nos a righteita sao vermelhos
-        DOT_Tree(Tree->right, name);
-    }
-
-    fclose(DOT);
-}
-//funcoes para abrir arquivo dot
-FILE* AbreEscritaDot(char* fn){
-    FILE* dot = fopen(fn, "w");
-
-    fprintf(dot, "\tdigraph BinaryTree {\n");
-    
-    fclose(dot);
-    return dot;
-}
-
-void FechaEscritaDOT(char* fn){
-    FILE* DOT = fopen(fn,"a+");
-    fprintf(DOT,"\n\t}");
-    fclose(DOT);
-}
-
-
+// Função principal
 int main() {
-    RedBlackTree tree;
-    tree.root = NULL;
+    // Exemplo de uso
+    Grafo* grafo = criarGrafo(TAM);
+    adicionarAresta(grafo, 0, 1);
+    adicionarAresta(grafo, 0, 2);
+    adicionarAresta(grafo, 1, 3);
+    adicionarAresta(grafo, 1, 4);
+    adicionarAresta(grafo, 2, 4);
+    adicionarAresta(grafo, 3, 5);
+    adicionarAresta(grafo, 4, 5);
+    adicionarAresta(grafo, 5, 0);
 
-    // Inserir valores de exemplo
-    insert(&tree, 30);
-    insert(&tree, 20);
-    insert(&tree, 50);
-    insert(&tree, 24);
-
-    // Imprimir em ordem
-    printf("Árvore Rubro-Negra em ordem: ");
-    inorderTraversal(tree.root);
-    printf("\n");
-
+    InfoVertice infoVertices[TAM];
     
-    // FILE* DOT = AbreEscritaDot("arvore.DOT");
-    // DOT_Tree(tree.root, "arvore.DOT");
-    // FechaEscritaDOT("arvore.DOT");
+    buscaEmLargura(grafo, 0, infoVertices);
+    buscaEmLargura(grafo, 1, infoVertices);
+    buscaEmLargura(grafo, 2, infoVertices);
+    buscaEmLargura(grafo, 3, infoVertices);
+    buscaEmLargura(grafo, 4, infoVertices);
+    buscaEmLargura(grafo, 5, infoVertices);
 
-    // // Remover valor de exemplo
-    deleteNode(&tree, 50);
-
-    // FILE* DOT2 = AbreEscritaDot("mudancas.DOT");
-    // DOT_Tree(tree.root, "mudancas.DOT");
-    // FechaEscritaDOT("mudancas.DOT");
-
-
-    // // Imprimir novamente após a remoção
-    // printf("Árvore Rubro-Negra em ordem após a remoção: ");
-    // inorderTraversal(tree.root);
-    // printf("\n");
+    // Libera a memória alocada para o grafo
+    for (int i = 0; i < grafo->V; ++i) {
+        Node* atual = grafo->listaAdj[i];
+        while (atual != NULL) {
+            Node* proximo = atual->proximo;
+            free(atual);
+            atual = proximo;
+        }
+    }
+    free(grafo->listaAdj);
+    free(grafo);
 
     return 0;
 }
