@@ -10,11 +10,11 @@ typedef void* Queue;
 Queue createQueue(int capacidade);
 //Checa se a fila esta vazia retornando se o comeco da fila == -1
 bool isEmptyQ(Queue fila); 
-
+//Insere o valor de elemento na fila
 void insertQueue(Queue fila, int elemento);
-
+//remove o primeiro elemento da fila
 int removeQueue(Queue fila);
-
+//Da free em todos os elementos da fila e depois no ponteiro dela mesma
 void killQueue(Queue fila);
 
 #endif
