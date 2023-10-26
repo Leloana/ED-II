@@ -115,7 +115,9 @@ void visitaEmLargura(Grafo* grafo, int verticeInicial, int quantVertices) {
         else if (infoVertices[i].cor == 1)cor = "CINZA";
         else cor = "PRETO";
 
-        printf("Vertice %d: Distancia = %d, Anterior = %d, Cor = %s\n", infoVertices[i].valor, infoVertices[i].distancia, infoVertices[i].anterior,cor);
+        if(infoVertices[i].valor != -1)printf("Vertice %d: Distancia = %d, Anterior = %d, Cor = %s\n",
+         i,infoVertices[i].distancia, infoVertices[i].anterior,cor);
+        else printf("Vertice %d: NAO ACESSADO\n", i);
     }
     // Libera a memória alocada para a fila
     killQueue(fila);
