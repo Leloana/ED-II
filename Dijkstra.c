@@ -6,13 +6,15 @@
 
 // Função para encontrar o vértice com a distância mínima
 // dos vértices ainda não incluídos no conjunto de caminhos mais curtos
-int minDistance(int dist[], int sptSet[]) {
-    int min = INT_MAX, min_index;
+int minDistance(int dist[], int jaVisitado[]) {
+    int min = INT_MAX;
+    int min_index;
 
-    for (int v = 0; v < V; v++) {
-        if (sptSet[v] == 0 && dist[v] <= min) {
-            min = dist[v];
-            min_index = v;
+    for (int i = 0; i < V; i++) {
+        // 0 é nao visitado, 1 é visitado
+        if (jaVisitado[i] == 0 && dist[i] <= min) {
+            min = dist[i];
+            min_index = i;
         }
     }
 
@@ -21,9 +23,9 @@ int minDistance(int dist[], int sptSet[]) {
 
 // Função para imprimir o array de distâncias
 void printSolution(int dist[], int partida) {
-    printf("Partindo de %d:\n", partida);
+    printf("Vertice inicial : %d\n", partida);
     for (int i = 0; i < V; i++) {
-        printf("Para o vértice %d: %d\n", i, dist[i]);
+        printf("Vertice Final : %d Distancia: %d\n", i, dist[i]);
     }
 }
 
@@ -32,12 +34,12 @@ void dijkstra(int graph[V][V], int partida) {
     int dist[V]; // Array para armazenar as distâncias mais curtas
 
     // sptSet[i] é verdadeiro se o vértice i está incluído no conjunto de caminhos mais curtos
-    int sptSet[V];
+    int jaVisitado[V];
 
     // Inicialização de todas as distâncias como infinito e sptSet[] como falso
     for (int i = 0; i < V; i++) {
         dist[i] = INT_MAX;
-        sptSet[i] = 0;
+        jaVisitado[i] = 0;//Nenhum ainda foi visitado
     }
 
     // A distância do vértice de origem para ele mesmo é sempre 0
@@ -46,15 +48,14 @@ void dijkstra(int graph[V][V], int partida) {
     // Encontrar os caminhos mais curtos para todos os vértices
     for (int count = 0; count < V - 1; count++) {
         // Escolhe o vértice com a distância mínima do conjunto de vértices ainda não processados
-        int u = minDistance(dist, sptSet);
+        int u = minDistance(dist, jaVisitado);
 
         // Marca o vértice escolhido como processado
-        sptSet[u] = 1;
-
+        jaVisitado[u] = 1;
         // Atualiza a distância dos vértices adjacentes ao vértice escolhido
-        for (int v = 0; v < V; v++) {
-            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v]) {
-                dist[v] = dist[u] + graph[u][v];
+        for (int i = 0; i < V; i++) {
+            if (!jaVisitado[i] && graph[u][i] && dist[u] != INT_MAX && dist[u] + graph[u][i] < dist[i]) {
+                dist[i] = dist[u] + graph[u][i];
             }
         }
     }
@@ -64,29 +65,29 @@ void dijkstra(int graph[V][V], int partida) {
 }
 
 // Função principal
-int main() {
+int main(void) {
     /* Matriz de adjacencia
        exemplo : o elemento [0][1] é 2, isso significa que entre o vertice
        0 e o vertice 1 há uma aresta de tamanho 2.
        Os elementos que sao iguais 0 representam a ausência de uma aresta 
        entre esses vértices 
     */
-    int grafo[V][V] = {{0, 2, 0, 6},
-                       {2, 0, 3, 8},
-                       {0, 3, 0, 0},
-                       {6, 8, 0, 0}};
+    int grafo[V][V] = {{0, 5, 0, 3},
+                       {5, 0, 2, 10},
+                       {0, 2, 0, 0},
+                       {3, 10, 0, 0}};
     /*
         Grafo montado
-        0 -- (2) -- 1
+        0 -- (5) -- 1
         |       /  |
-       (6)   (8) (3)
+       (3)   (10) (2)
         |   /     |
         3 /       2
 
     */
     
 
-    dijkstra(grafo, 2 );
+    dijkstra(grafo, 1 );
 
     return 0;
 }
