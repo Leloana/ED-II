@@ -3,7 +3,7 @@
 // Estrutura para representar uma fila (utilizada na BFS)
 typedef struct fila{
     
-    int* data;
+    void** data;
     int comeco;
     int final;
     int tamanho;
@@ -29,7 +29,7 @@ bool isEmptyQ(Queue fila) {
 }
 
 // Função para insertQueue um elemento
-void insertQueue(Queue fila, int elemento) {
+void insertQueue(Queue fila, void* elemento) {
     _queue* aux = (_queue*)fila;
     if(aux->tamanho == aux->capacidade){
         printf("FILA CHEIA!!");
@@ -42,10 +42,10 @@ void insertQueue(Queue fila, int elemento) {
 }
 
 // Função para removeQueue um elemento
-int removeQueue(Queue fila) {
+void* removeQueue(Queue fila) {
     _queue* aux = (_queue*)fila;
 
-    int elemento = aux->data[aux->comeco];
+    void* elemento = aux->data[aux->comeco];
     if (aux->comeco == aux->final)aux->comeco = aux->final = -1;//se o comeco = final ambos recebem -1
     else aux->comeco++;// se forem diferentes o comeco aumenta 1
 

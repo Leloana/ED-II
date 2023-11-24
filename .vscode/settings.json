@@ -59,6 +59,10 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "stdio.h": "c",
-    "fila.h": "c"
+    "fila.h": "c",
+    "list.h": "c",
+    "lista.h": "c",
+    "profundidade.h": "c",
+    "limits.h": "c"
   }
 }
