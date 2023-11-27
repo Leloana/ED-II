@@ -44,13 +44,15 @@ void profudidade(Vertice partida, InfoVertice* info){
 
         while (adjacente != NULL) { 
             int destino = getIndice(adjacente);
-
-            info[destino].cor = CINZA;
-            info[destino].valor = destino;
-            info[destino].distancia = info[getIndice(partida)].distancia + getPeso(aresta);
-            info[destino].anterior = getIndice(partida);   
-
-            profudidade(adjacente, info);
+    
+            if (info[destino].cor == BRANCO) {
+                    info[destino].cor = CINZA;
+                    info[destino].valor = destino;
+                    info[destino].distancia = info[getIndice(partida)].distancia + getPeso(aresta);
+                    info[destino].anterior = getIndice(partida);
+  
+                    profudidade(adjacente, info);
+            }
             
             no = getNextList(no);
             aresta = getData(no);

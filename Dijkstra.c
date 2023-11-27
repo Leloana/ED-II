@@ -12,7 +12,7 @@ int minDistance(int dist[], int jaVisitado[]) {
 
     for (int i = 0; i < V; i++) {
         // 0 é nao visitado, 1 é visitado
-        if (jaVisitado[i] == 0 && dist[i] <= min) {
+        if (jaVisitado[i] == 0 && dist[i] < min) {
             min = dist[i];
             min_index = i;
         }
@@ -23,7 +23,7 @@ int minDistance(int dist[], int jaVisitado[]) {
 
 // Função para imprimir o array de distâncias
 void printSolution(int dist[], int partida) {
-    printf("Vertice inicial : %d\n", partida);
+    printf("\nVertice inicial : %d\n", partida);
     for (int i = 0; i < V; i++) {
         printf("Vertice Final : %d Distancia: %d\n", i, dist[i]);
     }
@@ -43,19 +43,21 @@ void dijkstra(int graph[V][V], int partida) {
     }
 
     // A distância do vértice de origem para ele mesmo é sempre 0
-    dist[partida] = 0;
+    dist[partida] = 0;//IMPORTANTE SETAR COMO ZERO POIS ASSIM A FUNCAO MINDISTANCE CONSEGUE FUNCIONAR
 
     // Encontrar os caminhos mais curtos para todos os vértices
     for (int count = 0; count < V - 1; count++) {
         // Escolhe o vértice com a distância mínima do conjunto de vértices ainda não processados
         int u = minDistance(dist, jaVisitado);
-
+        printf("\n%d ", u);
         // Marca o vértice escolhido como processado
         jaVisitado[u] = 1;
         // Atualiza a distância dos vértices adjacentes ao vértice escolhido
         for (int i = 0; i < V; i++) {
-            if (!jaVisitado[i] && graph[u][i] && dist[u] != INT_MAX && dist[u] + graph[u][i] < dist[i]) {
+            if (jaVisitado[i] == 0 && graph[u][i] != 0 && dist[u] != INT_MAX && dist[u] + graph[u][i] < dist[i]) {
+                printf(" d(%d)-%d ",i,dist[i]);
                 dist[i] = dist[u] + graph[u][i];
+                printf("->%d", dist[i]);
             }
         }
     }
@@ -87,7 +89,7 @@ int main(void) {
     */
     
 
-    dijkstra(grafo, 1 );
+    dijkstra(grafo, 1);
 
     return 0;
 }

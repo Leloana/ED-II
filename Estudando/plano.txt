@@ -1,8 +1,3 @@
-
-Fazer Busca em grafos: 
-      > Refazer por largura;
-      > Fazer por profundidade;
-
 Caminhos mínimos:
       > Refazer Dijkstra (sozinho);
       > Tentar fazer o Bellman-Ford;

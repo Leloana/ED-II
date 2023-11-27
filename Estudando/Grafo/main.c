@@ -14,8 +14,7 @@ int main(void){
     addAresta(dois,quatro,20);
     addAresta(dois,cinco,25);
     addAresta(zero,um,25);
-
-
+    addAresta(zero,cinco,25);
 
     visitaEmLargura(zero, 6);
 
