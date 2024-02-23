@@ -1,0 +1,28 @@
+	digraph BinaryTree {
+
+		"4_0";
+		"12_1";
+		"23_0";
+		"23_0" -> "12_1";
+		"12_1"  [style=filled, fillcolor=purple, fontcolor=black];
+
+		"7_1";
+		"7_1" -> "4_0";
+		"4_0"  [style=filled, fillcolor=purple, fontcolor=black];
+
+		"7_1"-> "23_0";
+		"23_0"  [style=filled, fillcolor=red, fontcolor=black];
+
+		"32_1";
+		"25_0";
+		"25_0"-> "32_1";
+		"32_1"  [style=filled, fillcolor=red, fontcolor=black];
+
+		"24_0";
+		"24_0" -> "7_1";
+		"7_1"  [style=filled, fillcolor=purple, fontcolor=black];
+
+		"24_0"-> "25_0";
+		"25_0"  [style=filled, fillcolor=red, fontcolor=black];
+
+	}

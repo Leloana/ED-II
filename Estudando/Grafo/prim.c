@@ -31,7 +31,6 @@ void printMST(int parent[], int graph[V][V]) {
 void primMST(int graph[V][V]) {
     int parent[V]; // Array para armazenar a árvore geradora mínima
     int pesoMin[V];    // Array para armazenar o peso mínimo das arestas
-
     int jaVisitado[V]; // jaVisitado[i] será verdadeiro se o vértice i estiver incluído na árvore geradora mínima
 
     // Inicialização
@@ -48,7 +47,6 @@ void primMST(int graph[V][V]) {
     for (int count = 0; count < V - 1; count++) {
         // Escolhe o vértice com a chave mínima do conjunto de vértices ainda não processados
         int u = minpesoMin(pesoMin, jaVisitado);
-        printf(" %d ", u);
         // Marca o vértice escolhido como processado
         jaVisitado[u] = 1;
 

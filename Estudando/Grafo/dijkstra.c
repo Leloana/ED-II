@@ -21,10 +21,12 @@ int minDistance(int dist[], bool jaVisitado[]){
 void dijkstra(int grafo[V][V], int partida){
     int dist[V];
     bool jaVisitado[V];
+    int pai[V];
 
     for (int i = 0; i < V; i++){
         dist[i] = INT_MAX;
         jaVisitado[i] = false;
+        pai[i] = -1;
     }
 
     dist[partida] = 0;
@@ -45,27 +47,23 @@ void dijkstra(int grafo[V][V], int partida){
             */
             if(!jaVisitado[i] && grafo[u][i] != 0 && dist[u] + grafo[u][i] < dist[i]){
                 dist[i] = dist[u] + grafo[u][i];
+                pai[i] = u;
             }
         }
     }
 
     for(int i = 0; i < V; i++){
         printf("Distancia (%d->%d) = %d\n",partida,i, dist[i]);
+        printf("Pai de %d = %d\n", i, pai[i]);
     }
 }
 
 int main(void){
 
-    int grafo[V][V] = {{0,9,3,0},
-                       {9,0,7,2},
-                       {3,7,0,9},
-                       {0,2,9,0},};
+    int grafo[V][V] = {{0,9,0,4},
+                       {9,0,8,1},
+                       {0,8,0,0},
+                       {4,1,0,0},};
 
-    /* 
-       0->1 = 10   0->2 = 3     0->3 = 0
-       1->0 = 10   1->2 = 7     1->3 = 2
-       2->0 = 3    2->1 = 7     2->3 = 9
-       3->0 = 0    3->1 = 2     3->2 = 9
-    */
    dijkstra(grafo, 1);
 }

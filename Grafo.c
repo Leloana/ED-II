@@ -86,6 +86,8 @@ void bfs(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int startVertex) {
     printf("\n");
 }
 
+//Mariana
+
 int main() {
     // Exemplo de matriz de adjacência
     int graph[MAX_VERTICES][MAX_VERTICES] = {

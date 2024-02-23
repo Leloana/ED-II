@@ -28,11 +28,8 @@ void visitaEmProfundidade(Vertice partida, int quantVertices){
 
 void profudidade(Vertice partida, InfoVertice* info){
     int verticeInicial = getIndice(partida);
-    if(info[verticeInicial].cor == PRETO ) return;
-
     // Pega lista de arestas adjacentes
     Lista adjacentes = getListaArestas(partida);
-    
     if(!isEmptyList(adjacentes)){
         printf("%d ",getIndice(partida));
         // //Pega o no da lista de adjacentes
@@ -59,7 +56,7 @@ void profudidade(Vertice partida, InfoVertice* info){
             adjacente = getVertice(aresta);
         }
         
-    info[getIndice(partida)].cor = PRETO;
+        info[verticeInicial].cor = PRETO;
 
     }
     else{
